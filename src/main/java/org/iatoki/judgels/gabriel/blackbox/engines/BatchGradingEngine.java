@@ -56,7 +56,12 @@ public final class BatchGradingEngine extends BlackBoxGradingEngine {
         compiler = new SingleSourceFileCompiler(compilerSandbox, getCompilationDir(), language, sourceFieldKey, sourceFile, getCompilationTimeLimitInMilliseconds(), getCompilationMemoryLimitInKilobytes());
 
         evaluatorSandbox = sandboxFactory.newSandbox();
-        evaluator = new BatchEvaluator(evaluatorSandbox, getCompilationDir(), getEvaluationDir(), language, sourceFile, castConfig.getTimeLimitInMilliseconds(), castConfig.getMemoryLimitInKilobytes());
+
+        int timeLimit = castConfig.getTimeLimitInMilliseconds();
+        if (language.getName().equals("Java 8")) {
+            timeLimit = timeLimit * 2;
+        }
+        evaluator = new BatchEvaluator(evaluatorSandbox, getCompilationDir(), getEvaluationDir(), language, sourceFile, timeLimit, castConfig.getMemoryLimitInKilobytes());
 
         if (castConfig.getCustomScorer() != null) {
             scorerSandbox = sandboxFactory.newSandbox();
